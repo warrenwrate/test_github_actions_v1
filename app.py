@@ -1,7 +1,6 @@
 def add(a, b):
     return a + b
 
-#dev
 def sub(a, b):
     return a - b
 
