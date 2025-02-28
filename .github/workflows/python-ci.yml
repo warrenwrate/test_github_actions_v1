@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +24,28 @@ jobs:
           python -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
+          pip install pytest
 
-      - name: Run Python Script
-        run: python app.py
+      - name: Run Tests
+        run: |
+          source venv/bin/activate
+          pytest test_app.py
+
+  push_changes:
+    needs: test  # This job only runs if the "test" job succeeds
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Commit and Push Changes
+        run: |
+          git add .
+          git commit -m "Auto-commit: Tests passed ✅" || echo "No changes to commit"
+          git push origin main
