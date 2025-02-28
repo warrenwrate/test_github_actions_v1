@@ -3,8 +3,7 @@ name: Python CI
 on: 
   push:
     branches:
-      - main
-  pull_request:
+      - dev  # Only trigger workflow when changes are pushed to 'dev'
 
 jobs:
   test:
@@ -31,9 +30,10 @@ jobs:
           source venv/bin/activate
           pytest test_app.py
 
-  push_changes:
-    needs: test  # This job only runs if the "test" job succeeds
+  merge_to_main:
+    needs: test  # This job only runs if tests pass
     runs-on: ubuntu-latest
+    if: success()
 
     steps:
       - name: Checkout Code
@@ -44,8 +44,9 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
-      - name: Commit and Push Changes
+      - name: Merge Dev to Main
         run: |
-          git add .
-          git commit -m "Auto-commit: Tests passed ✅" || echo "No changes to commit"
+          git fetch origin
+          git checkout main
+          git merge --ff-only dev
           git push origin main
