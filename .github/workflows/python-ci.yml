@@ -29,24 +29,3 @@ jobs:
         run: |
           source venv/bin/activate
           pytest test_app.py
-
-  merge_to_main:
-    needs: test  # This job only runs if tests pass
-    runs-on: ubuntu-latest
-    if: success()
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-
-      - name: Merge Dev to Main
-        run: |
-          git fetch origin
-          git checkout main
-          git merge --ff-only dev
-          git push origin main
