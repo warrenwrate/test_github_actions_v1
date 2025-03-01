@@ -29,8 +29,24 @@ jobs:
           source venv/bin/activate
           pytest test_app.py || echo "No tests found, skipping"
 
-  create_pr:
+  update_dev_branch:
     needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ensure Dev Branch is Up to Date
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull origin dev || echo "No remote updates"
+          git push origin dev || echo "No changes to push"
+
+  create_pr:
+    needs: update_dev_branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
