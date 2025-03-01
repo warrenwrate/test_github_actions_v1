@@ -32,21 +32,20 @@ jobs:
   create_pr:
     needs: test
     runs-on: ubuntu-latest
-    if: success()
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Needed for branch history when creating PRs
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: Automated PR from dev to main
-          title: Automated PR from dev to main
+          commit-message: "Automated PR from dev to main"
+          title: "Automated PR from dev to main"
           body: |
             Automated Pull Request created by GitHub Actions.
             This PR merges the latest changes from dev to main.
-          branch: dev
-          base: main
+          base: main  # Target branch
+          branch: dev  # Source branch
